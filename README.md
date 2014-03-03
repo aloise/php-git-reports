@@ -8,3 +8,9 @@ It creates a summary report in CSV with monthly stats about workhours and develo
 Git log message should follow the following format:
 
 [+] 1.2h - MESSAGE
+
+
+How to run
+==========
+
+> php multi-report-repo.php > output.csv
