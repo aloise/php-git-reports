@@ -13,4 +13,4 @@ Git log message should follow the following format:
 How to run
 ==========
 
-> php multi-report-repo.php > output.csv
+> php report.php > output.csv
