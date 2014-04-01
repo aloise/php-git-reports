@@ -133,7 +133,7 @@ Class GitReporter {
     function gitReadCommits($dir)    {
                 $output = array();
                 chdir($dir);
-                exec("git log",$output);
+                exec("git log --all",$output);
                 $history = array();
                 //dd($output);
                 $commit = array();
