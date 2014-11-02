@@ -14,7 +14,7 @@ $aggregateByDate = 'F Y';
 
 $g = new GitReporter();
 
-echo $g->summaryReport($repos, $aggregateByDate );
+echo $g->summaryReport($repos, $aggregateByDate, true );
 // echo $g->detailedReport( $repos['buyborg'] );
 
 
@@ -32,7 +32,13 @@ Class GitReporter {
 		
 		$cleanMsg = preg_replace( "/^\[.\]\s*/", '', $msg );
 
-                $r .= $this->csvRowEncode( array( strtotime($commit['date']), $cleanMsg, $data['time'] ) );
+		$timestamp = strtotime($commit['date']);
+
+		$timeHours = number_format( (float)$data['time']/3600,2, ",", "" );
+
+		
+
+                $r .= $this->csvRowEncode( array( $timestamp, date('d-m-Y', $timestamp) ,  $cleanMsg, $data['time'], $timeHours ) );
             }
 
         }
@@ -41,7 +47,7 @@ Class GitReporter {
     }
 
 
-    function summaryReport($repositories, $aggregateByDate) {
+    function summaryReport($repositories, $aggregateByDate, $authorEmailOnly = false) {
         if( $repositories ){
 
             $summary = array();
@@ -49,7 +55,7 @@ Class GitReporter {
             foreach( $repositories as $repoName => $repo ){
                 if(file_exists( $repo )){
                     $log = $this->gitReadCommits($repo);
-                    $resultGroup = $this->processGitLog( $log, $aggregateByDate);
+                    $resultGroup = $this->processGitLog( $log, $aggregateByDate, $authorEmailOnly );
 
 
 
@@ -205,13 +211,20 @@ Class GitReporter {
 
     }
 
-    function processGitLog($input, $dateGroup){
+    function processGitLog($input, $dateGroup, $authorEmailOnly ){
 
         $sumByAuthor = array();
 
         foreach($input as $commit){
 
-                $author = $commit['author'];
+                $author = trim( $commit['author'] );
+                if( $authorEmailOnly ){
+
+                	$result = $this->parseEmail( $author );
+                	if($result){
+                		$author = $result;
+                	}
+                } 
                 $date = date($dateGroup, strtotime($commit['date']));
 
                 $message = $commit['message'];
@@ -230,6 +243,17 @@ Class GitReporter {
 
         return $sumByAuthor;
 
+
+    }
+
+    function parseEmail($str){
+
+		preg_match("/<([^>]+)>/",$str,$matches);
+		if( $matches ){
+			return strtolower( $matches[1] );
+		} else {
+			return false;
+		}
 
     }
 
