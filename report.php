@@ -9,8 +9,6 @@ $repos = array(
 	'repo2' => '/another/path/to/your/repositoty'
 );
 
-$aggregateByDate = 'F Y';
-
 // exclude specific committers from the log
 $excludeCommiters = array('sample@email.com');
 
